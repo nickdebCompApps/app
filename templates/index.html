@@ -10,9 +10,10 @@
       <h1>Welcome to Flask!</h1>
       <br>
       <p>Click <a href="/logout">here</a> to logout.</p>
-      {% for message in get_flashed_messages() %}
-        {{ message }}
-      {% endfor %}
+      
+	<h3><img src="{{ url_for('video_feed') }}" height="90%"></h3>
+
+
     </div>
   </body>
 </html>

@@ -1,6 +1,7 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import Flask, render_template, redirect, url_for, request, session, flash, Response
 from functools import wraps
 import key
+from camera_pi import Camera
 # create the application object
 app = Flask(__name__)
 
@@ -26,6 +27,13 @@ def home():
     return render_template('index.html')  # render a template
     # return "Hello, World!"  # return a string
 
+def gen(camera):
+    """Video streaming generator function."""
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        
 @app.route('/welcome')
 def welcome():
     return render_template('welcome.html')  # render a template
@@ -51,6 +59,11 @@ def logout():
     return redirect(url_for('welcome'))
 
 
-# start the server with the 'run()' method
+
+@app.route('/video_feed')
+def video_feed():
+    """Video streaming route. Put this in the src attribute of an img tag."""
+    return Response(gen(Camera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port = 2000, threaded=True)# start the server with the 'run()' method
