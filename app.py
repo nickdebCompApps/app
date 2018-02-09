@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash, Response
 from functools import wraps
 import key
-from camera_pi import Camera
+#from camera_pi import Camera
 # create the application object
 app = Flask(__name__)
 
@@ -21,19 +21,21 @@ def login_required(f):
     return wrap
 
 # use decorators to link the function to a url
+
+
 @app.route('/')
 @login_required
 def home():
     return render_template('index.html')  # render a template
     # return "Hello, World!"  # return a string
-
+'''
 def gen(camera):
     """Video streaming generator function."""
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-        
+   '''     
 @app.route('/welcome')
 def welcome():
     return render_template('welcome.html')  # render a template
@@ -51,19 +53,37 @@ def login():
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
+
+@app.route('/error')
+def error():
+    return render_template('login.html')
+
+
+
 @app.route('/logout')
 @login_required
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out.')
-    return redirect(url_for('welcome'))
+    return redirect(url_for('error'))
 
-
-
+@app.route('/logs')
+@login_required
+def log():
+    with open('error.log', 'r') as f:
+        content = f.readlines()
+        content.reverse()
+    return render_template("logs.html", content=content)
+'''
 @app.route('/video_feed')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+					'''
+import logging
+logging.basicConfig(filename='error.log',level=logging.DEBUG)
+
+					
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port = 2000, threaded=True)# start the server with the 'run()' method
+    app.run(host = '0.0.0.0', port=5010, threaded=True)# start the server with the 'run()' method

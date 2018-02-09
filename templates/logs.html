@@ -552,7 +552,9 @@ footer.sticky-footer {
 	  <div class='col-4'>
 	  </div>
 	  <div class='col-6'>
-	  	<h3><img class='piStream' src="fake.jpg"></h3>
+	  	{% for log in content %}
+      <p>{{ log }} </p>
+  {% endfor %}
 	  </div>
 	  <div class='col-2'>
 	  </div>
@@ -562,3 +564,4 @@ footer.sticky-footer {
     </div>
   </body>
 </html>
+
